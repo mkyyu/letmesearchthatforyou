@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SearchForThem</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f2f5, #e0e6ed);
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      cursor: none;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      color: #202124;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 12px 20px;
+      background-color: #4285f4;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+    #linkOutput {
+      margin-top: 20px;
+      display: none;
+    }
+    #resultLink {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+    }
+    #mouse {
+      width: 50px;
+      height: 80px;
+      background: url('cursor.png') no-repeat center center / contain;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      pointer-events: none;
+      transition: top 0.1s ease, left 0.1s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SearchForThem</h1>
+    <input type="text" id="query" placeholder="What should they search?" />
+    <br />
+    <button onclick="generate()">Generate Link</button>
+    <div id="linkOutput">
+      <p>Copy and share this:</p>
+      <input type="text" id="resultLink" readonly />
+    </div>
+  </div>
+  <div id="mouse"></div>
+  <script>
+    function generate() {
+      const query = document.getElementById("query").value.trim();
+      if (!query) return alert("Type something!");
+      const encoded = encodeURIComponent(query);
+      const link = `${window.location.origin}${window.location.pathname}?q=${encoded}`;
+      document.getElementById("resultLink").value = link;
+      document.getElementById("linkOutput").style.display = "block";
+    }
+
+    function simulateTypingAndRedirect(query) {
+      document.body.innerHTML = '<div style="font-size: 20px; margin-bottom: 20px; font-family: Inter, sans-serif;">Let me show you...</div><div><input id="fakeInput" style="width: 400px; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc;" /></div><div id="searchIcon" style="margin-top:10px;font-size:18px;background:#4285f4;color:white;display:inline-block;padding:10px 14px;border-radius:6px;cursor:pointer;">🔍 Search</div><div id="mouse"></div>';
+
+      const fakeInput = document.getElementById("fakeInput");
+      const searchIcon = document.getElementById("searchIcon");
+      const mouse = document.getElementById("mouse");
+      let i = 0;
+      const interval = setInterval(() => {
+        fakeInput.value += query[i++];
+        if (i >= query.length) {
+          clearInterval(interval);
+          setTimeout(() => {
+            mouseMoveTo(searchIcon, () => {
+              setTimeout(() => {
+                searchIcon.style.background = '#3367d6';
+                setTimeout(() => {
+                  window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                }, 1000);
+              }, 500);
+            });
+          }, 1000);
+        }
+      }, 100);
+    }
+
+    function mouseMoveTo(target, callback) {
+      const mouse = document.getElementById("mouse");
+      const targetRect = target.getBoundingClientRect();
+      const start = mouse.getBoundingClientRect();
+      const steps = 30;
+      let current = 0;
+      const stepX = (targetRect.left - start.left) / steps;
+      const stepY = (targetRect.top - start.top) / steps;
+
+      const interval = setInterval(() => {
+        current++;
+        mouse.style.left = `${start.left + stepX * current}px`;
+        mouse.style.top = `${start.top + stepY * current}px`;
+        if (current >= steps) {
+          clearInterval(interval);
+          callback();
+        }
+      }, 16);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("q")) {
+      const q = params.get("q");
+      simulateTypingAndRedirect(q);
+    }
+  </script>
+</body>
+</html>
