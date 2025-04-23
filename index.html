@@ -65,11 +65,10 @@
     #mouse {
       width: 50px;
       height: 80px;
-      background: url('cursor.png') no-repeat center center / contain;
+      background: url('cursor.png') no-repeat top left / contain;
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
       z-index: 9999;
       pointer-events: none;
       transition: top 0.1s ease, left 0.1s ease;
@@ -99,28 +98,41 @@
     }
 
     function simulateTypingAndRedirect(query) {
-      document.body.innerHTML = '<div style="font-size: 20px; margin-bottom: 20px; font-family: Inter, sans-serif;">Let me show you...</div><div><input id="fakeInput" style="width: 400px; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc;" /></div><div id="searchIcon" style="margin-top:10px;font-size:18px;background:#4285f4;color:white;display:inline-block;padding:10px 14px;border-radius:6px;cursor:pointer;">🔍 Search</div><div id="mouse"></div>';
-
-      const fakeInput = document.getElementById("fakeInput");
-      const searchIcon = document.getElementById("searchIcon");
       const mouse = document.getElementById("mouse");
-      let i = 0;
-      const interval = setInterval(() => {
-        fakeInput.value += query[i++];
-        if (i >= query.length) {
-          clearInterval(interval);
+      document.body.innerHTML = '<div id="step1" style="font-size: 20px; font-family: Inter, sans-serif;">Step 1: Double click your browser</div><div id="mouse"></div>';
+      document.body.appendChild(mouse);
+      const fakeBrowserIcon = document.createElement("div");
+      fakeBrowserIcon.textContent = "🌐 Firefox";
+      fakeBrowserIcon.style = "margin-top: 20px; font-size: 20px; border: 2px solid #888; border-radius: 8px; padding: 20px; display: inline-block; cursor: pointer;";
+      fakeBrowserIcon.id = "browserIcon";
+      document.body.appendChild(fakeBrowserIcon);
+
+      setTimeout(() => {
+        mouseMoveTo(fakeBrowserIcon, () => {
           setTimeout(() => {
-            mouseMoveTo(searchIcon, () => {
-              setTimeout(() => {
-                searchIcon.style.background = '#3367d6';
+            // Step 2 - Go to address bar
+            document.body.innerHTML = '<div style="font-size: 20px; font-family: Inter, sans-serif;">Step 2: Go to the address bar and type</div><div><input id="addressBar" style="width: 500px; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; margin-top: 20px;" /></div><div id="mouse"></div>';
+            document.body.appendChild(mouse);
+            const addressBar = document.getElementById("addressBar");
+            let i = 0;
+            const url = `https://www.google.com/search?q=${query}`;
+            const typingInterval = setInterval(() => {
+              addressBar.value += url[i++];
+              if (i >= url.length) {
+                clearInterval(typingInterval);
                 setTimeout(() => {
-                  window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-                }, 1000);
-              }, 500);
-            });
-          }, 1000);
-        }
-      }, 100);
+                  // Step 3 - Press Enter and redirect
+                  document.body.innerHTML = '<div style="font-size: 20px; font-family: Inter, sans-serif;">Step 3: Press Enter</div><div id="mouse"></div>';
+                  document.body.appendChild(mouse);
+                  setTimeout(() => {
+                    window.location.href = url;
+                  }, 1000);
+                }, 800);
+              }
+            }, 80);
+          }, 600);
+        });
+      }, 600);
     }
 
     function mouseMoveTo(target, callback) {
