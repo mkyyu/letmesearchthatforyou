@@ -73,6 +73,14 @@
       pointer-events: none;
       transition: top 0.1s ease, left 0.1s ease;
     }
+    @media (max-width: 600px) {
+      input, #resultLink {
+        font-size: 14px;
+      }
+      #addressBar {
+        width: 90% !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -99,7 +107,7 @@
 
     function simulateTypingAndRedirect(query) {
       const mouse = document.getElementById("mouse");
-      document.body.innerHTML = '<div id="step1" style="font-size: 20px; font-family: Inter, sans-serif;">Step 1: Double click your browser</div><div id="mouse"></div>';
+      document.body.innerHTML = '<div style="font-size: 20px; font-family: Inter, sans-serif;">Step 1: Double click your browser</div><div id="mouse"></div>';
       document.body.appendChild(mouse);
       const fakeBrowserIcon = document.createElement("div");
       fakeBrowserIcon.textContent = "🌐 Firefox";
@@ -110,26 +118,29 @@
       setTimeout(() => {
         mouseMoveTo(fakeBrowserIcon, () => {
           setTimeout(() => {
-            // Step 2 - Go to address bar
-            document.body.innerHTML = '<div style="font-size: 20px; font-family: Inter, sans-serif;">Step 2: Go to the address bar and type</div><div><input id="addressBar" style="width: 500px; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; margin-top: 20px;" /></div><div id="mouse"></div>';
+            document.body.innerHTML = '<div style="font-size: 20px; font-family: Inter, sans-serif;">Step 2: Go to the address bar and type</div><div style="margin-top: 20px;"><input id="addressBar" style="width: 500px; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc;" /><button id="goButton" style="margin-left: 10px; padding: 10px 14px; background-color: #4285f4; color: white; border: none; border-radius: 6px; font-size: 16px;">Go</button></div><div id="mouse"></div>';
             document.body.appendChild(mouse);
             const addressBar = document.getElementById("addressBar");
-            let i = 0;
+            const goButton = document.getElementById("goButton");
             const url = `https://www.google.com/search?q=${query}`;
-            const typingInterval = setInterval(() => {
-              addressBar.value += url[i++];
-              if (i >= url.length) {
-                clearInterval(typingInterval);
-                setTimeout(() => {
-                  // Step 3 - Press Enter and redirect
-                  document.body.innerHTML = '<div style="font-size: 20px; font-family: Inter, sans-serif;">Step 3: Press Enter</div><div id="mouse"></div>';
-                  document.body.appendChild(mouse);
+            mouseMoveTo(addressBar, () => {
+              addressBar.focus();
+              let i = 0;
+              const typingInterval = setInterval(() => {
+                addressBar.value += url[i++];
+                if (i >= url.length) {
+                  clearInterval(typingInterval);
                   setTimeout(() => {
-                    window.location.href = url;
-                  }, 1000);
-                }, 800);
-              }
-            }, 80);
+                    mouseMoveTo(goButton, () => {
+                      goButton.style.background = '#3367d6';
+                      setTimeout(() => {
+                        window.location.href = url;
+                      }, 1000);
+                    });
+                  }, 500);
+                }
+              }, 70);
+            });
           }, 600);
         });
       }, 600);
