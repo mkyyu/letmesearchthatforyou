@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SearchForYou</title>
+  <title>Yueming Search For You</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -16,162 +16,367 @@
       justify-content: center;
       flex-direction: column;
       cursor: none;
+      color: #202124;
     }
     .container {
       background: white;
       padding: 40px;
       border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.12);
       text-align: center;
       width: 90%;
       max-width: 500px;
+      transition: transform 0.3s ease;
+    }
+    .container:hover {
+      transform: translateY(-5px);
     }
     h1 {
-      color: #202124;
-      font-size: 28px;
-      margin-bottom: 20px;
+      color: #4285f4;
+      font-size: 32px;
+      margin-bottom: 25px;
+      font-weight: 600;
     }
     input {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      border: 2px solid #e0e6ed;
+      border-radius: 10px;
+      margin-bottom: 16px;
       box-sizing: border-box;
+      transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
+    input:focus {
+      border-color: #4285f4;
+      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+      outline: none;
     }
     button {
-      padding: 12px 20px;
+      padding: 14px 24px;
       background-color: #4285f4;
       color: white;
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 16px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
     }
     button:hover {
       background-color: #3367d6;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(66, 133, 244, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
     }
     #linkOutput {
-      margin-top: 20px;
+      margin-top: 25px;
       display: none;
+      animation: fadeIn 0.5s ease;
     }
     #resultLink {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
+      font-size: 15px;
+      background-color: #f8f9fa;
+      border: 2px solid #e0e6ed;
+      border-radius: 10px;
+    }
+    .copy-btn {
+      margin-top: 10px;
+      background-color: #34a853;
+      padding: 10px 20px;
       font-size: 14px;
     }
+    .copy-btn:hover {
+      background-color: #2d9144;
+    }
     #mouse {
-      width: 50px;
-      height: 80px;
-      background: url('cursor.png') no-repeat top left / contain;
+      width: 40px;
+      height: 60px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234285f4"><path d="M13.64,21.97C13.14,22.21 12.54,22 12.31,21.5L10.13,16.76L7.62,18.78C7.45,18.92 7.24,19 7,19A1,1 0 0,1 6,18V3A1,1 0 0,1 7,2C7.24,2 7.47,2.09 7.64,2.23L7.65,2.22L19.14,11.86C19.57,12.22 19.62,12.85 19.27,13.27C19.12,13.45 18.91,13.57 18.7,13.61L15.54,14.23L17.74,18.96C18,19.46 17.76,20.05 17.26,20.28L13.64,21.97Z"/></svg>') no-repeat center center / contain;
       position: fixed;
       z-index: 9999;
       pointer-events: none;
       transition: top 0.1s ease, left 0.1s ease;
     }
+    .browser-sim {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    .browser-header {
+      background: #f1f3f4;
+      padding: 10px 15px;
+      border-bottom: 1px solid #dadce0;
+      display: flex;
+      align-items: center;
+    }
+    .browser-tabs {
+      display: flex;
+      margin-right: 10px;
+    }
+    .browser-tab {
+      background: white;
+      padding: 8px 16px;
+      border-radius: 8px 8px 0 0;
+      font-size: 14px;
+      margin-right: 5px;
+    }
+    .browser-controls {
+      display: flex;
+      margin-right: 15px;
+    }
+    .browser-control {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .red { background: #ff5f57; }
+    .yellow { background: #febc2e; }
+    .green { background: #28c840; }
+    #searchBar {
+      flex: 1;
+      padding: 10px 15px;
+      border-radius: 20px;
+      border: 1px solid #dadce0;
+      font-size: 14px;
+      background-color: white;
+      margin: 0 10px;
+    }
+    .browser-content {
+      height: 350px;
+      padding: 20px;
+      overflow: auto;
+    }
+    .search-animation {
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+      animation-delay: 3s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .loading-dots {
+      display: inline-block;
+    }
+    .loading-dots span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4285f4;
+      margin: 0 3px;
+      animation: dots 1.4s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+      background: #ea4335;
+    }
+    .loading-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+      background: #fbbc05;
+    }
+    .loading-dots span:nth-child(4) {
+      animation-delay: 0.6s;
+      background: #34a853;
+    }
+    @keyframes dots {
+      0%, 100% { transform: scale(0.75); opacity: 0.5; }
+      50% { transform: scale(1); opacity: 1; }
+    }
     @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+      h1 {
+        font-size: 26px;
+      }
       input, #resultLink {
         font-size: 14px;
+        padding: 12px;
       }
-      #addressBar {
-        width: 90% !important;
+      button {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+      .browser-sim {
+        max-width: 95%;
+      }
+      .browser-tabs, .browser-controls {
+        display: none;
+      }
+      #searchBar {
+        margin: 0 5px;
+        padding: 8px 10px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Search For You</h1>
+    <h1>Yueming will Search For You</h1>
     <input type="text" id="query" placeholder="What should they search?" />
     <br />
     <button onclick="generate()">Generate Link</button>
     <div id="linkOutput">
-      <p>Copy and share this:</p>
+      <p>Copy and share this link:</p>
       <input type="text" id="resultLink" readonly />
+      <button class="copy-btn" onclick="copyLink()">Copy to Clipboard</button>
     </div>
   </div>
   <div id="mouse"></div>
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("q")) {
+        const q = params.get("q");
+        simulateTypingAndRedirect(q);
+      } else {
+        // Track mouse movement for the cursor
+        document.addEventListener('mousemove', (e) => {
+          const mouse = document.getElementById('mouse');
+          if (mouse) {
+            mouse.style.left = `${e.clientX - 5}px`;
+            mouse.style.top = `${e.clientY - 5}px`;
+          }
+        });
+      }
+    });
+
     function generate() {
       const query = document.getElementById("query").value.trim();
-      if (!query) return alert("Type something!");
+      if (!query) {
+        const container = document.querySelector('.container');
+        container.style.animation = 'shake 0.5s ease';
+        setTimeout(() => container.style.animation = '', 500);
+        return alert("Please type something to search!");
+      }
+      
       const encoded = encodeURIComponent(query);
       const link = `${window.location.origin}${window.location.pathname}?q=${encoded}`;
       document.getElementById("resultLink").value = link;
       document.getElementById("linkOutput").style.display = "block";
     }
 
-    function simulateTypingAndRedirect(query) {
-      const mouse = document.getElementById("mouse");
-      mouse.style.left = '0px';
-      mouse.style.top = '0px';
-      document.body.innerHTML = '<div style="font-size: 20px; font-family: Inter, sans-serif;">Step 1: Double click your browser</div>';
-      document.body.appendChild(mouse);
-
-      const fakeBrowserIcon = document.createElement("div");
-      fakeBrowserIcon.textContent = "🌐 Web Browser";
-      fakeBrowserIcon.style = "margin-top: 20px; font-size: 20px; border: 2px solid #888; border-radius: 8px; padding: 20px; display: inline-block; cursor: pointer;";
-      fakeBrowserIcon.id = "browserIcon";
-      document.body.appendChild(fakeBrowserIcon);
-
+    function copyLink() {
+      const resultLink = document.getElementById("resultLink");
+      resultLink.select();
+      document.execCommand("copy");
+      
+      const copyBtn = document.querySelector('.copy-btn');
+      const originalText = copyBtn.textContent;
+      copyBtn.textContent = "Copied!";
+      copyBtn.style.backgroundColor = "#4285f4";
+      
       setTimeout(() => {
-        mouseMoveTo(fakeBrowserIcon, () => {
-          setTimeout(() => {
-            document.body.innerHTML = '<div style="font-size: 20px; font-family: Inter, sans-serif;">Step 2: Go to the address bar and type</div><div style="margin-top: 20px;"><input id="addressBar" style="width: 500px; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc;" /><button id="goButton" style="margin-left: 10px; padding: 10px 14px; background-color: #4285f4; color: white; border: none; border-radius: 6px; font-size: 16px;">Go</button></div>';
-            document.body.appendChild(mouse);
+        copyBtn.textContent = originalText;
+        copyBtn.style.backgroundColor = "#34a853";
+      }, 1500);
+    }
 
-            const addressBar = document.getElementById("addressBar");
-            const goButton = document.getElementById("goButton");
-            const url = `https://www.google.com/search?q=${query}`;
-            mouseMoveTo(addressBar, () => {
-              addressBar.focus();
-              let i = 0;
-              const typingInterval = setInterval(() => {
-                addressBar.value += url[i++];
-                if (i >= url.length) {
-                  clearInterval(typingInterval);
-                  setTimeout(() => {
-                    mouseMoveTo(goButton, () => {
-                      goButton.style.background = '#3367d6';
-                      setTimeout(() => {
-                        window.location.href = url;
-                      }, 1000);
-                    });
-                  }, 500);
-                }
-              }, 70);
-            });
-          }, 600);
+    function simulateTypingAndRedirect(query) {
+      document.body.innerHTML = `
+        <div id="mouse"></div>
+        <div class="browser-sim">
+          <div class="browser-header">
+            <div class="browser-controls">
+              <div class="browser-control red"></div>
+              <div class="browser-control yellow"></div>
+              <div class="browser-control green"></div>
+            </div>
+            <div class="browser-tabs">
+              <div class="browser-tab">New Tab</div>
+            </div>
+            <div id="searchBar"></div>
+          </div>
+          <div class="browser-content">
+            <div style="text-align: center; margin-top: 100px;">
+              <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <p>Searching...</p>
+            </div>
+            <div class="search-animation">
+              <h2>Search results for: "${query}"</h2>
+              <p>You will be redirected to Google Search...</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const mouse = document.getElementById("mouse");
+      const searchBar = document.getElementById("searchBar");
+      
+      // Track mouse movement
+      document.addEventListener('mousemove', (e) => {
+        mouse.style.left = `${e.clientX - 5}px`;
+        mouse.style.top = `${e.clientY - 5}px`;
+      });
+
+      // Start animation sequence
+      setTimeout(() => {
+        mouseMoveTo(searchBar, () => {
+          setTimeout(() => {
+            searchBar.style.backgroundColor = "#f1f3f4";
+            searchBar.style.boxShadow = "0 0 0 2px #4285f4";
+            
+            // Type only the search term, not the full URL
+            let i = 0;
+            const typingInterval = setInterval(() => {
+              searchBar.textContent += query[i++];
+              if (i >= query.length) {
+                clearInterval(typingInterval);
+                
+                // Add a small delay then redirect
+                setTimeout(() => {
+                  const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                  window.location.href = url;
+                }, 5000);
+              }
+            }, 100);
+          }, 300);
         });
-      }, 600);
+      }, 1000);
     }
 
     function mouseMoveTo(target, callback) {
       const mouse = document.getElementById("mouse");
       const targetRect = target.getBoundingClientRect();
-      const start = mouse.getBoundingClientRect();
+      const mouseRect = mouse.getBoundingClientRect();
+      
+      const startX = mouseRect.left || 0;
+      const startY = mouseRect.top || 0;
+      const endX = targetRect.left + targetRect.width / 2 - 10;
+      const endY = targetRect.top + targetRect.height / 2 - 10;
+      
       const steps = 30;
       let current = 0;
-      const stepX = (targetRect.left - start.left) / steps;
-      const stepY = (targetRect.top - start.top) / steps;
+      const stepX = (endX - startX) / steps;
+      const stepY = (endY - startY) / steps;
 
       const interval = setInterval(() => {
         current++;
-        mouse.style.left = `${start.left + stepX * current}px`;
-        mouse.style.top = `${start.top + stepY * current}px`;
+        mouse.style.left = `${startX + stepX * current}px`;
+        mouse.style.top = `${startY + stepY * current}px`;
         if (current >= steps) {
           clearInterval(interval);
           callback();
         }
       }, 16);
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.has("q")) {
-      const q = params.get("q");
-      simulateTypingAndRedirect(q);
     }
   </script>
 </body>
